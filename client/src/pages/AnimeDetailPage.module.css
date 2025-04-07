@@ -1,0 +1,103 @@
+/* [client/src/pages/AnimeDetailPage.module.css] */
+/* Добавляем/уточняем адаптивность */
+
+.detailPage {}
+
+/* --- Стили Баннера --- */
+.banner { min-height: 350px; max-height: 45vh; position: relative; display: flex; align-items: flex-end; background-size: cover; background-position: center 25%; background-repeat: no-repeat; background-color: var(--background-tertiary); color: var(--text-header); }
+.bannerOverlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15, 15, 15, 0.95) 5%, rgba(15, 15, 15, 0.7) 25%, rgba(15, 15, 15, 0.2) 60%, transparent 100%), rgba(15, 15, 15, 0.2); z-index: 1; }
+.bannerContent { position: relative; z-index: 2; width: 100%; max-width: 1400px; margin: 0 auto; padding: var(--spacing-10) var(--spacing-6) var(--spacing-6); display: flex; align-items: flex-end; }
+.bannerInfo { max-width: 75%; }
+.animeTitle { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; line-height: 1.2; margin-bottom: var(--spacing-1); text-shadow: 1px 2px 5px rgba(0, 0, 0, 0.7); }
+.animeOriginalTitle { font-size: var(--font-size-lg); font-weight: 400; color: var(--text-secondary); margin-bottom: var(--spacing-4); line-height: 1.3; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); }
+.metaRow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-1) var(--spacing-3); font-size: var(--font-size-sm); color: var(--text-muted); margin-bottom: var(--spacing-4); }
+.metaItem { display: inline-flex; align-items: center; }
+.metaSeparator { }
+.ratingRow { display: flex; align-items: center; gap: var(--spacing-4); margin-bottom: var(--spacing-6); flex-wrap: wrap; }
+.ratingItem { display: inline-flex; align-items: center; gap: var(--spacing-1); font-size: var(--font-size-sm); font-weight: 600; color: var(--text-base); background-color: rgba(var(--background-card-rgb), 0.5); padding: var(--spacing-1) var(--spacing-3); border-radius: var(--border-radius-md); border: 1px solid var(--border-color); backdrop-filter: blur(3px); }
+.ratingIcon { width: 16px; height: 16px; opacity: 0.8; margin-right: 2px; }
+.ratingItem[title*="Shikimori"] .ratingIcon { color: var(--accent-gold); }
+.ratingItem[title*="Кинопоиск"] .ratingIcon { color: #FF6600; }
+.ratingItem[title*="IMDb"] .ratingIcon { color: #F5C518; }
+.addToListButton { padding: var(--spacing-2) var(--spacing-5); font-size: var(--font-size-sm); font-weight: 600; color: #fff; background-image: var(--background-accent-gradient); border: none; border-radius: var(--border-radius-md); cursor: pointer; transition: all 0.2s ease-out; box-shadow: var(--shadow-md), 0 0 10px -5px var(--accent-glow); }
+.addToListButton:hover { filter: brightness(1.1); box-shadow: var(--shadow-lg), 0 0 15px -3px var(--accent-glow); transform: translateY(-1px); }
+.addToListButton:active { transform: translateY(0px); filter: brightness(0.95); }
+
+/* --- Основной контент --- */
+.mainContentWrapper { max-width: 1400px; margin: var(--spacing-8) auto 0; padding: 0 var(--spacing-6) var(--spacing-16); }
+.mainContent { display: grid; grid-template-columns: 240px 1fr; gap: var(--spacing-8); align-items: flex-start; }
+
+/* --- Сайдбар --- */
+.sidebar { position: sticky; top: calc(var(--header-height) + var(--spacing-4)); /* Учитываем высоту хедера */ max-height: calc(100vh - var(--header-height) - var(--spacing-4) * 2); overflow-y: auto; display: flex; flex-direction: column; gap: var(--spacing-6); padding-right: var(--spacing-2); scrollbar-width: thin; scrollbar-color: var(--border-color) transparent; }
+.sidebar::-webkit-scrollbar { width: 5px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 3px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background-color: var(--border-color-light); }
+.posterImage { width: 100%; height: auto; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); margin-bottom: var(--spacing-2); aspect-ratio: 2/3; object-fit: cover; background-color: var(--background-tertiary); }
+.sidebarWidget { background-color: var(--background-card); border-radius: var(--border-radius-md); border: 1px solid var(--border-color); padding: var(--spacing-4); }
+.widgetTitle { font-size: var(--font-size-sm); font-weight: 600; color: var(--text-secondary); margin: 0 0 var(--spacing-3) 0; padding-bottom: var(--spacing-2); border-bottom: 1px solid var(--border-color-light); text-transform: uppercase; letter-spacing: 0.5px; }
+.widgetList { list-style: none; padding: 0; margin: 0; font-size: var(--font-size-sm); display: flex; flex-direction: column; gap: var(--spacing-2); }
+.widgetList li { display: flex; justify-content: space-between; gap: var(--spacing-3); line-height: 1.5; }
+.widgetList li span:first-child { color: var(--text-muted); flex-shrink: 0; }
+.widgetList li span:last-child { color: var(--text-base); text-align: right; font-weight: 500; }
+.widgetList li span.statusAnons { color: var(--accent-info); font-weight: 600; }
+.widgetList li span.statusOngoing { color: var(--accent-success); font-weight: 600; }
+.widgetList li span.statusReleased { color: var(--text-base); }
+.widgetTagContainer { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.genreTag { display: inline-block; padding: 3px var(--spacing-3); font-size: var(--font-size-xs); color: var(--text-secondary); background-color: var(--background-tertiary); border: 1px solid var(--border-color); border-radius: var(--border-radius-full); text-decoration: none; transition: all 0.15s ease-out; }
+.genreTag:hover { color: var(--text-header); background-color: var(--accent-1); border-color: var(--accent-1); transform: scale(1.05); }
+.externalLinks { display: flex; flex-direction: column; gap: var(--spacing-2); }
+.externalLinks a { font-size: var(--font-size-sm); color: var(--accent-1); text-decoration: underline; text-decoration-color: transparent; transition: color 0.2s, text-decoration-color 0.2s; }
+.externalLinks a:hover { color: var(--accent-2); text-decoration-color: var(--accent-2); }
+
+/* --- Правая Колонка Контента --- */
+.contentColumn { display: flex; flex-direction: column; gap: var(--spacing-8); min-width: 0; /* Предотвращает переполнение */ }
+.sectionTitle { font-size: var(--font-size-xl); font-weight: 600; color: var(--text-header); margin-bottom: var(--spacing-4); padding-bottom: var(--spacing-2); border-bottom: 1px solid var(--border-color-light); }
+.playerSection {}
+.playerWrapper { position: relative; padding-top: 56.25%; background-color: var(--background-deep); border-radius: var(--border-radius-lg); overflow: hidden; border: 1px solid var(--border-color); }
+.playerIframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+.playerPlaceholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; min-height: 200px; }
+.descriptionSection {}
+.descriptionText { font-size: var(--font-size-base); color: var(--text-secondary); line-height: 1.7; }
+.descriptionText p { margin-bottom: var(--spacing-3); line-height: inherit; color: inherit; }
+.descriptionText a { color: var(--accent-1); text-decoration: underline; }
+.descriptionText a:hover { color: var(--accent-2); }
+.descriptionText ul, .descriptionText ol { margin-left: var(--spacing-5); margin-bottom: var(--spacing-3); }
+.descriptionText li { margin-bottom: var(--spacing-1); }
+.screenshotsSection {}
+.screenshotsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--spacing-3); }
+.screenshotLink { display: block; border-radius: var(--border-radius-md); overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; }
+.screenshotLink:hover { transform: scale(1.03); box-shadow: var(--shadow-lg); }
+.screenshotImage { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+
+/* --- Адаптивность --- */
+@media (max-width: 992px) {
+    .mainContent { grid-template-columns: 200px 1fr; gap: var(--spacing-6); }
+    .sidebar { top: calc(var(--header-height) + var(--spacing-2)); } /* Уменьшаем отступ */
+}
+@media (max-width: 768px) {
+    .mainContent { grid-template-columns: 1fr; } /* Одна колонка */
+    .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; margin-bottom: var(--spacing-8); /* Добавляем отступ снизу */}
+    .posterImage { max-width: 250px; margin: 0 auto var(--spacing-4); }
+    .bannerContent { padding: var(--spacing-8) var(--spacing-4) var(--spacing-4); }
+    .bannerInfo { max-width: 100%; }
+    .animeTitle { font-size: clamp(1.6rem, 5vw, 2.2rem); }
+    .mainContentWrapper { padding: 0 var(--spacing-4) var(--spacing-12); margin-top: var(--spacing-6); }
+}
+@media (max-width: 480px) {
+    .banner { min-height: 280px; } /* Уменьшаем */
+    .metaRow { font-size: var(--font-size-xs); }
+    .ratingRow { gap: var(--spacing-3); }
+    .ratingItem { font-size: var(--font-size-xs); padding: var(--spacing-1) var(--spacing-2); }
+    .ratingIcon { width: 14px; height: 14px; }
+    .addToListButton { padding: var(--spacing-2) var(--spacing-4); font-size: var(--font-size-xs); }
+    .posterImage { max-width: 200px; }
+    .sidebar { gap: var(--spacing-4); }
+    .widgetList { font-size: var(--font-size-xs); }
+    .externalLinks a { font-size: var(--font-size-xs); }
+    .contentColumn { gap: var(--spacing-6); }
+    .sectionTitle { font-size: var(--font-size-lg); }
+    .descriptionText { font-size: var(--font-size-sm); }
+    .screenshotsGrid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--spacing-2); }
+    .mainContentWrapper { padding: 0 var(--spacing-2) var(--spacing-12); }
+}

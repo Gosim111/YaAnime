@@ -1,0 +1,100 @@
+/* [client/src/components/Header/Header.module.css] */
+
+.header {
+    background-color: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    padding: 0 var(--spacing-4); /* Используем паддинги вместо высоты */
+    height: var(--header-height); /* Фиксированная высота */
+    border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+    position: sticky; top: 0; z-index: 1000;
+    transition: background-color var(--transition-duration-medium) var(--transition-timing-default);
+    display: flex; /* Добавили flex для выравнивания контейнера */
+    align-items: center; /* Выравниваем контейнер по центру вертикально */
+}
+.container {
+    width: 100%; /* Занимает всю ширину хедера */
+    max-width: 1600px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: var(--spacing-6);
+}
+.logo { font-size: var(--font-size-lg); font-weight: 700; color: var(--text-header); text-decoration: none; flex-shrink: 0; transition: color var(--transition-duration-fast) var(--transition-timing-default); }
+.logoAccent { color: var(--accent-1); }
+.logo:hover { color: var(--text-header); }
+.logo:hover .logoAccent { color: var(--accent-2); }
+
+/* Навигация для десктопа */
+.nav { display: flex; gap: var(--spacing-5); }
+.navLink { font-size: var(--font-size-sm); font-weight: 500; color: var(--text-secondary); text-decoration: none; padding: var(--spacing-1) var(--spacing-1); position: relative; transition: color var(--transition-duration-medium) var(--transition-timing-default); border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.navLink::after { display: none; }
+.navLink:hover { color: var(--text-header); }
+.navLink.active { color: var(--accent-1); font-weight: 600; border-bottom-color: var(--accent-1); }
+
+/* Контейнер для правых элементов (поиск, юзер, бургер) */
+.actionsContainer { display: flex; align-items: center; gap: var(--spacing-4); }
+.userActionsPlaceholder { min-width: 100px; height: 30px; flex-shrink: 0; } /* Оставляем как заглушку */
+
+/* Кнопка бургера */
+.burgerButton {
+    display: none; /* Скрыта по умолчанию */
+    background: none; border: none; padding: var(--spacing-2);
+    color: var(--text-secondary); cursor: pointer; z-index: 1101; /* Выше оверлея */
+    transition: color 0.2s;
+}
+.burgerButton:hover { color: var(--text-header); }
+.burgerButton svg { display: block; }
+
+/* Мобильное меню */
+.mobileMenu {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: clamp(250px, 70vw, 320px); /* Адаптивная ширина */
+    background-color: var(--background-primary);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -5px 0px 20px rgba(0, 0, 0, 0.4);
+    transform: translateX(100%); /* Скрыто за экраном */
+    transition: transform 0.4s var(--transition-timing-default);
+    z-index: 1100; /* Выше хедера и контента */
+    padding: calc(var(--header-height) + var(--spacing-6)) var(--spacing-6) var(--spacing-6);
+    overflow-y: auto;
+}
+.mobileMenuOpen { transform: translateX(0%); } /* Показываем меню */
+.mobileNavLinks { display: flex; flex-direction: column; gap: var(--spacing-2); }
+.mobileNavLink {
+    display: block;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: var(--border-radius-md);
+    transition: background-color 0.2s, color 0.2s;
+}
+.mobileNavLink:hover { background-color: var(--background-hover-subtle); color: var(--text-header); }
+.mobileNavLink.active { color: var(--accent-1); font-weight: 600; background-color: rgba(var(--accent-1-rgb), 0.1); }
+
+/* Оверлей для закрытия меню */
+.overlay {
+    position: fixed; inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 1050; /* Ниже меню, но выше остального */
+    opacity: 0;
+    transition: opacity 0.4s var(--transition-timing-default);
+    pointer-events: none;
+}
+/* Показываем оверлей только когда меню открыто */
+.mobileMenuOpen + .overlay { opacity: 1; pointer-events: auto; }
+
+
+/* --- Адаптивность для хедера --- */
+@media (max-width: 768px) {
+    .desktopNav { display: none; } /* Скрываем десктопную навигацию */
+    .burgerButton { display: block; } /* Показываем бургер */
+    .userActionsPlaceholder { display: none; } /* Скрываем заглушку пользователя */
+    .container { gap: var(--spacing-4); } /* Уменьшаем отступ */
+}
+@media (max-width: 480px) {
+    .logo { font-size: var(--font-size-base); } /* Уменьшаем лого */
+    .header { padding: 0 var(--spacing-2); } /* Уменьшаем боковые отступы хедера */
+    .mobileNavLink { font-size: var(--font-size-base); padding: var(--spacing-2) var(--spacing-3); }
+}

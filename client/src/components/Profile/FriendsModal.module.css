@@ -1,0 +1,29 @@
+/* [client/src/components/Profile/FriendsModal.module.css] */
+
+.friendsContainer { max-height: 70vh; display: flex; flex-direction: column; gap: var(--spacing-4); }
+.controls { display: flex; gap: var(--spacing-4); padding-bottom: var(--spacing-4); border-bottom: 1px solid var(--border-color-light); flex-wrap: wrap; }
+.searchInput { flex-grow: 1; background-color: var(--background-tertiary); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: var(--spacing-2) var(--spacing-3); color: var(--text-base); font-size: var(--font-size-sm); min-width: 200px; transition: border-color 0.2s, box-shadow 0.2s; }
+.searchInput:focus { outline: none; border-color: var(--border-color-accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.sortSelect { background-color: var(--background-tertiary); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: var(--spacing-2) var(--spacing-3); color: var(--text-secondary); font-size: var(--font-size-sm); cursor: pointer; min-width: 150px; transition: border-color 0.2s; }
+.sortSelect:focus { outline: none; border-color: var(--border-color-accent); }
+.sortSelect:hover { border-color: var(--border-color-light); }
+.friendsList { list-style: none; padding: 0; margin: 0; overflow-y: auto; padding-right: var(--spacing-1); scrollbar-width: thin; scrollbar-color: var(--border-color) transparent; }
+.friendsList::-webkit-scrollbar { width: 5px; }
+.friendsList::-webkit-scrollbar-track { background: transparent; }
+.friendsList::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 3px; }
+.friendItem { display: flex; align-items: center; gap: var(--spacing-3); padding: var(--spacing-2) 0; border-bottom: 1px solid var(--border-color); }
+.friendItem:last-child { border-bottom: none; }
+.friendLinkWrapper { display: flex; align-items: center; gap: var(--spacing-3); flex-grow: 1; min-width: 0; text-decoration: none; color: inherit; padding: var(--spacing-1) var(--spacing-2); margin: 0 -var(--spacing-2); border-radius: var(--border-radius-md); transition: background-color 0.15s; }
+.friendLinkWrapper:hover { background-color: var(--background-hover-subtle); }
+.friendLinkWrapper:hover .friendNickname { color: var(--accent-1); }
+.friendAvatarWrapper { position: relative; flex-shrink: 0; }
+.friendAvatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: var(--background-tertiary); display: block; }
+.friendOnlineIndicator { width: 10px; height: 10px; background-color: var(--accent-success); border-radius: 50%; border: 2px solid var(--background-container); position: absolute; bottom: 0px; right: 0px; z-index: 2; }
+.friendInfo { flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
+.friendNickname { font-weight: 500; color: var(--text-base); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.15s; }
+.friendTag { font-size: var(--font-size-xs); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.friendActions { display: flex; gap: var(--spacing-2); margin-left: auto; flex-shrink: 0; }
+.actionButton { background: none; border: none; color: var(--text-muted); font-size: 1.1em; padding: var(--spacing-1); cursor: pointer; transition: color 0.15s; line-height: 1; }
+.actionButton:hover { color: var(--accent-1); }
+.loading, .error, .noFriends { text-align: center; padding: var(--spacing-8) 0; color: var(--text-muted); }
+.error { color: var(--accent-danger); }

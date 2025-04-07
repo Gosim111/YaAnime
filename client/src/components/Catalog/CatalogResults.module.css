@@ -1,0 +1,37 @@
+/* [client/src/components/Catalog/CatalogResults.module.css] */
+
+.resultsWrapper { display: flex; flex-direction: column; gap: var(--spacing-6); }
+.toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-4); padding-bottom: var(--spacing-4); border-bottom: 1px solid var(--border-color); }
+.resultsInfo { font-size: var(--font-size-sm); color: var(--text-muted); }
+.searchQueryInfo { font-style: italic; margin-left: var(--spacing-2); }
+.controls { display: flex; align-items: center; gap: var(--spacing-4); }
+.sortSelect { background-color: var(--background-tertiary); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: var(--spacing-1) var(--spacing-3); color: var(--text-secondary); font-size: var(--font-size-xs); font-weight: 500; cursor: pointer; transition: border-color 0.2s; min-width: 180px; }
+.sortSelect:hover { border-color: var(--border-color-light); }
+.sortSelect:focus { outline: none; border-color: var(--border-color-accent); }
+.viewToggle { display: flex; background-color: var(--background-tertiary); border-radius: var(--border-radius-md); border: 1px solid var(--border-color); overflow: hidden; }
+.toggleButton { background: none; border: none; padding: var(--spacing-1) var(--spacing-2); color: var(--text-muted); cursor: pointer; transition: background-color 0.2s, color 0.2s; display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--border-color); }
+.toggleButton:first-child { border-left: none; }
+.toggleButton:hover { background-color: var(--background-hover-subtle); color: var(--text-header); }
+.toggleButton.active { background-color: var(--accent-2); color: white; }
+.toggleButton svg { width: 16px; height: 16px; }
+
+.gridContainer { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--catalog-card-min-width, 190px), 1fr)); gap: var(--spacing-5); padding-top: var(--spacing-2); }
+.listContainer { display: flex; flex-direction: column; gap: var(--spacing-4); padding-top: var(--spacing-2); }
+
+/* --- ВОЗВРАЩАЕМ СТИЛИ ДЛЯ ВИДИМОСТИ, УБИРАЕМ АНИМАЦИЮ --- */
+.gridItem,
+.listContainer > * {
+    opacity: 1; /* Гарантируем видимость */
+    visibility: visible;
+    /* Убираем любую анимацию появления для каталога */
+    animation: none;
+}
+.gridItem > * { height: 100%; }
+
+/* Адаптивность (без изменений) */
+:root { --catalog-card-min-width: 190px; }
+@media (max-width: 1200px) { :root { --catalog-card-min-width: 175px; } }
+@media (max-width: 992px) { .toolbar { flex-direction: column; align-items: stretch; } .controls { justify-content: space-between; width: 100%; } :root { --catalog-card-min-width: 160px; } }
+@media (max-width: 768px) { :root { --catalog-card-min-width: 150px; } }
+@media (max-width: 576px) { :root { --catalog-card-min-width: 130px; } .controls { flex-direction: column; align-items: stretch; gap: var(--spacing-3); } .sortSelect { min-width: 100%; } .viewToggle { align-self: center; } .gridContainer { gap: var(--spacing-3); } .listContainer { gap: var(--spacing-3); } }
+@media (max-width: 400px) { .gridContainer { grid-template-columns: 1fr; } :root { --catalog-card-min-width: 100%; } }

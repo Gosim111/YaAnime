@@ -1,0 +1,159 @@
+/* [client/src/pages/ProfilePage.module.css] */
+
+.profilePage { padding-bottom: var(--spacing-16); }
+.profileCover { height: 300px; background-color: var(--background-tertiary); overflow: hidden; position: relative; }
+.coverImage { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.8) saturate(1.1); transition: transform 0.4s ease-out; }
+.profileCover:hover .coverImage { transform: scale(1.03); }
+.coverOverlay { position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to bottom, rgba(18, 18, 23, 0) 0%, rgba(18, 18, 23, 0.95) 90%, rgb(18, 18, 23) 100%); pointer-events: none; z-index: 5; }
+.profileBody { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-8); position: relative; }
+
+/* --- Шапка профиля --- */
+.profileHeader {
+    display: flex; align-items: flex-end; gap: var(--spacing-6);
+    position: relative; margin-top: -70px; /* ! Скорректировали подъем */ margin-bottom: var(--spacing-6);
+    padding: var(--spacing-4) var(--spacing-5); /* ! Уменьшили боковые паддинги */
+    background-color: rgba(35, 35, 42, 0.94); /* ! Фон плотнее */
+    backdrop-filter: blur(14px); border: 1px solid rgba(94, 94, 107, 0.3);
+    border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); z-index: 10;
+    min-height: 100px; /* Минимальная высота для баланса */
+}
+
+.profileHeaderLeft { flex-shrink: 0; margin-bottom: -30px; /* ! Сдвиг аватара вниз */ position: relative; }
+.avatarLinkWrapper { display: block; border-radius: 50%; position: relative; transition: transform 0.3s var(--transition-timing-default), box-shadow 0.3s var(--transition-timing-default); z-index: 12; }
+.profileHeaderLeft:hover .avatarLinkWrapper { transform: scale(1.05); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+.avatar {
+    width: 120px; height: 120px; /* ! Уменьшили аватар */ border-radius: 50%; object-fit: cover;
+    border: 4px solid var(--background-deep); background-color: var(--background-tertiary); display: block;
+}
+.onlineStatusIndicator {
+    width: 18px; height: 18px; background-color: var(--accent-success);
+    border-radius: 50%; border: 3px solid var(--background-deep);
+    position: absolute; bottom: 6px; right: 6px; /* ! Скорректировали позицию */
+    z-index: 13; box-shadow: 0 0 8px 1px rgba(52, 211, 153, 0.6);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.profileHeaderCenter { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; padding-bottom: var(--spacing-2); }
+.nameAndDate { margin-bottom: var(--spacing-3); } /* Уменьшили отступ */
+.nameLinkWrapper { color: inherit; text-decoration: none; display: inline-block; }
+.nickname { font-size: var(--font-size-2xl); /* ! Уменьшили */ color: var(--text-header); margin: 0 0 var(--spacing-1) 0; line-height: 1.1; word-break: break-word; text-shadow: 1px 1px 5px rgba(0,0,0,0.6); transition: color 0.2s; }
+.nameLinkWrapper:hover .nickname { color: var(--accent-1); }
+.tag { font-size: var(--font-size-sm); color: var(--text-muted); margin: 0; word-break: break-all; opacity: 0.8; transition: color 0.2s; }
+.nameLinkWrapper:hover .tag { color: var(--text-secondary); }
+.registrationDate { font-size: var(--font-size-xs); color: var(--text-muted); margin-top: var(--spacing-1); }
+
+.profileHeaderRight { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; /* Выравнивание вправо */ justify-content: space-between; /* Распределение статистики и кнопок */ padding-bottom: var(--spacing-2); min-height: 80px; /* Для выравнивания с инфо */ }
+.statsContainer { display: flex; gap: var(--spacing-4); margin-bottom: var(--spacing-3); /* Отступ от кнопок */ }
+.statItem { display: flex; align-items: center; /* ! Выравнивание по центру */ gap: var(--spacing-1); /* Отступ между иконкой/значением и лейблом */ transition: transform 0.2s ease, color 0.2s; cursor: pointer; background: none; border: none; padding: var(--spacing-1) var(--spacing-2); margin: -var(--spacing-1) -var(--spacing-2); color: inherit; border-radius: var(--border-radius-md); }
+.statItem svg { width: 14px; height: 14px; color: var(--text-muted); transition: color 0.2s; } /* Иконка друзей */
+.statItem:hover { transform: translateY(-2px); background-color: var(--background-hover-subtle); }
+.statItem:hover .statValue, .statItem:hover svg { color: var(--accent-1); }
+.statItem:hover .statLabel { color: var(--text-secondary); }
+.statValue { font-size: var(--font-size-sm); /* ! Еще уменьшили */ font-weight: 600; color: var(--text-header); line-height: 1; transition: color 0.2s; }
+.statLabel { font-size: var(--font-size-xs); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.2s; display: none; /* ! Скрыли лейбл по умолчанию */ }
+.statItem:hover .statLabel { display: block; /* ! Показываем лейбл при ховере */ } /* Можно оставить лейбл видимым всегда, если нужно */
+.actionsContainer { display: flex; gap: var(--spacing-3); }
+.actionButton { padding: var(--spacing-2) var(--spacing-4); border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: 600; cursor: pointer; border: 1px solid; transition: all 0.15s ease-out; text-decoration: none; text-align: center; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: var(--spacing-2); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.actionButton:active { transform: translateY(1px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.15); }
+.settingsButton { color: var(--text-secondary); background-color: rgba(55, 55, 65, 0.7); border-color: rgba(94, 94, 107, 0.5); backdrop-filter: blur(4px); }
+.settingsButton:hover { background-color: rgba(70, 70, 82, 0.8); border-color: var(--border-color-light); color: var(--text-header); }
+.followButton { color: var(--text-header); background-color: var(--accent-2); border-color: transparent; box-shadow: 0 2px 5px rgba(139, 92, 246, 0.4); }
+.followButton:hover { background-color: var(--accent-1); border-color: transparent; box-shadow: 0 4px 10px rgba(167, 139, 250, 0.5); transform: translateY(-1px); }
+.messageButton { color: var(--text-secondary); background-color: rgba(55, 55, 65, 0.7); border-color: rgba(94, 94, 107, 0.5); backdrop-filter: blur(4px); }
+.messageButton:hover { background-color: rgba(70, 70, 82, 0.8); border-color: var(--border-color-light); color: var(--text-header); }
+.buttonIcon { width: 16px; height: 16px; opacity: 0.9; }
+.settingsButton .buttonIcon { stroke-width: 2; }
+
+/* --- Контейнер для вкладок и контента --- */
+.profileContentTabsContainer { background-color: var(--background-primary); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); margin-top: var(--spacing-8); box-shadow: var(--shadow-md); overflow: hidden; }
+/* --- Навигация по основным вкладкам --- */
+.profileTabsNav { display: flex; background-color: var(--background-card); border-bottom: 1px solid var(--border-color); padding: 0 var(--spacing-4); overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
+.profileTabsNav::-webkit-scrollbar { display: none; }
+.mainTabButton { background: none; border: none; border-bottom: 3px solid transparent; padding: var(--spacing-4) var(--spacing-5); margin-bottom: -1px; color: var(--text-muted); font-size: var(--font-size-base); font-weight: 500; cursor: pointer; transition: color 0.2s, border-color 0.3s var(--transition-timing-default), background-color 0.2s; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: var(--spacing-2); position: relative; }
+.tabIcon { width: 18px; height: 18px; opacity: 0.6; transition: opacity 0.2s, color 0.2s; stroke-width: 1.5; }
+.mainTabButton:hover .tabIcon { opacity: 0.8; }
+.mainTabButtonActive .tabIcon { opacity: 1; color: var(--accent-1); }
+.mainTabButton:hover { color: var(--text-header); background-color: var(--background-hover-subtle); }
+.mainTabButtonActive { color: var(--text-header); border-bottom-color: var(--accent-1); font-weight: 600; }
+.mainTabButtonActive:hover { background-color: transparent; }
+/* --- Контент активной вкладки --- */
+.profileTabContent { padding: var(--spacing-6) var(--spacing-8); }
+
+/* === Стили для AnimeListContainerTab === */
+.listTabContentWrapper { }
+.listToolbar { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: center; padding: var(--spacing-4) 0; margin-bottom: var(--spacing-4); background-color: transparent; border: none; border-bottom: 1px solid var(--border-color-light); border-radius: 0; }
+.viewModeToggle { display: inline-flex; margin-right: auto; }
+.toolButton { background-color: var(--background-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: var(--spacing-1) var(--spacing-2); cursor: pointer; transition: all 0.15s; font-size: 1em; line-height: 1; }
+.toolButton svg { display: block; width: 16px; height: 16px; }
+.toolButton:first-child { border-radius: var(--border-radius-md) 0 0 var(--border-radius-md); border-right: none;}
+.toolButton:last-child { border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; }
+.toolButton:hover { background-color: var(--background-tertiary); color: var(--text-header); border-color: var(--border-color-light); }
+.toolButtonActive { background-color: var(--accent-2); border-color: var(--accent-2); color: var(--text-header); }
+.listSortSelect { background-color: var(--background-card); color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: var(--spacing-2) var(--spacing-3); font-size: var(--font-size-xs); /* margin-left: auto; */ cursor: pointer; min-width: 180px; }
+.listSortSelect:hover { border-color: var(--border-color-light); }
+.listStatusTabs { display: flex; margin-bottom: var(--spacing-6); overflow-x: auto; border-bottom: none; padding-bottom: 0; gap: var(--spacing-3); -ms-overflow-style: none; scrollbar-width: none; }
+.listStatusTabs::-webkit-scrollbar { display: none; }
+.statusTabButton { background-color: transparent; border: none; border-bottom: 2px solid transparent; border-radius: 0; padding: var(--spacing-2) 0; margin: 0 var(--spacing-3); color: var(--text-muted); font-size: var(--font-size-sm); font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: var(--spacing-1); position: relative; }
+.statusTabButton::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background-color: var(--border-color-light); transform: scaleX(0); transition: transform 0.2s ease; }
+.statusTabButton:hover::after { transform: scaleX(1); }
+.statusTabButton:hover { background-color: transparent; color: var(--text-header); }
+.statusTabButtonActive { color: var(--text-header); border-bottom-color: var(--accent-1); font-weight: 600; }
+.statusTabButtonActive::after { display: none; }
+.statusCount { font-size: 0.8em; color: var(--text-extra-muted); font-weight: 400; margin-left: 2px; }
+.statusTabButtonActive .statusCount { color: var(--text-muted); }
+.statusListContent { padding-top: var(--spacing-2); }
+.profileAnimeGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--spacing-6); }
+/* Обертка для вида "Список" */
+.listWrapper { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); overflow: hidden; background-color: var(--background-card); }
+
+
+/* === Стили для Заглушек === */
+.placeholderContent { background-color: transparent; border: 2px dashed var(--border-color-light); border-radius: var(--border-radius-lg); padding: var(--spacing-12) var(--spacing-8); text-align: center; color: var(--text-muted); min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.placeholderContent p { font-size: var(--font-size-lg); margin-top: var(--spacing-2); }
+.placeholderContent h3 { color: var(--text-secondary); font-weight: 500; margin-bottom: var(--spacing-4); }
+.tabPlaceholder { padding: var(--spacing-4); }
+.reviewItemPlaceholder { background-color: var(--background-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: var(--spacing-4); margin-bottom: var(--spacing-4); }
+.reviewItemPlaceholder h4 { margin: 0 0 var(--spacing-2) 0; color: var(--text-header); font-size: var(--font-size-base); }
+.reviewItemPlaceholder p { color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-2); }
+.reviewItemPlaceholder span { font-size: var(--font-size-xs); color: var(--text-muted); display: inline-block; margin-right: var(--spacing-4); }
+/* Используем стили .feedItem из OverviewTab */
+.feedItem { background-color: var(--background-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: var(--spacing-3) var(--spacing-4); display: flex; align-items: center; gap: var(--spacing-3); font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-3); transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s; position: relative; box-shadow: var(--shadow-sm); }
+.feedItem:hover { background-color: var(--background-tertiary); border-color: var(--border-color-light); box-shadow: var(--shadow-md); }
+.feedItemIcon { font-size: 1.1em; opacity: 0.8; color: var(--accent-1); flex-shrink: 0; line-height: 1; margin-right: var(--spacing-1); }
+.feedItemText { flex-grow: 1; line-height: 1.5; }
+.feedItemTimestamp { margin-left: var(--spacing-4); color: var(--text-extra-muted); font-size: var(--font-size-xs); white-space: nowrap; flex-shrink: 0; align-self: center; }
+.feedItem b { color: var(--text-header); font-weight: 500; }
+.ratingHighlight { color: var(--accent-warning); font-weight: 700; }
+
+
+/* === Адаптивность === */
+@media (max-width: 900px) {
+    .profileBody { padding: 0 var(--spacing-4); }
+    .profileHeader { flex-direction: column; align-items: center; text-align: center; margin-top: -60px; gap: var(--spacing-4); padding: var(--spacing-4); }
+    .profileHeaderLeft { margin-bottom: 0; }
+    .profileHeaderCenter { align-items: center; padding-bottom: 0; }
+    .statsContainer { justify-content: center; gap: var(--spacing-4); }
+    .statItem { align-items: center; }
+    .profileHeaderRight { width: 100%; justify-content: center; flex-direction: row; flex-wrap: wrap; padding-bottom: 0; gap: var(--spacing-3); }
+    .profileContentTabsContainer { margin-top: var(--spacing-6); }
+}
+@media (max-width: 640px) {
+    .profileCover { height: 220px; }
+    .profileBody { padding: 0 var(--spacing-2); }
+    .profileHeader { margin-top: -50px; gap: var(--spacing-3); padding: var(--spacing-3); } /* Уменьшили паддинг */
+    .profileHeaderLeft { margin-bottom: -10px; } /* Уменьшили сдвиг аватара */
+    .avatar { width: 90px; height: 90px; border-width: 3px; } /* Уменьшили аватар */
+    .onlineStatusIndicator { width: 12px; height: 12px; border-width: 2px; bottom: 5px; right: 5px; }
+    .nickname { font-size: var(--font-size-xl); }
+    .tag { font-size: var(--font-size-sm); margin-bottom: var(--spacing-2); }
+    .statsContainer { gap: var(--spacing-3); flex-wrap: wrap; justify-content: center; margin-top: var(--spacing-2); padding-top: var(--spacing-2); }
+    .statValue { font-size: var(--font-size-sm); }
+    .statLabel { font-size: 0.6rem; }
+    .mainTabButton { padding: var(--spacing-3); font-size: var(--font-size-sm); gap: var(--spacing-1); margin: 0 var(--spacing-1); }
+    .tabIcon { width: 16px; height: 16px; }
+    .profileAnimeGrid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: var(--spacing-3); }
+    .actionButton { width: auto; flex-grow: 1; max-width: 160px; padding: var(--spacing-2); font-size: var(--font-size-xs); }
+    .listToolbar { padding: var(--spacing-2) 0; }
+    .statusTabButton { padding: var(--spacing-2) 0; font-size: var(--font-size-xs); margin: 0 var(--spacing-1); }
+    .profileTabContent { padding: var(--spacing-4); }
+}

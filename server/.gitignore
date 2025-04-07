@@ -1,0 +1,67 @@
+# Файлы зависимостей (НИКОГДА не добавлять в Git)
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Файлы переменных окружения (СОДЕРЖАТ СЕКРЕТЫ!)
+.env
+client/.env
+server/.env
+.env.*
+client/.env.*
+server/.env.*
+!.env.example # Оставляем возможность добавить пример файла .env
+
+# Файлы сборки и бандлы
+dist/
+build/
+client/dist/
+client/build/
+server/dist/
+server/build/
+*.local
+
+# Логи
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Кэш зависимостей и IDE
+.npm/
+.pnpm-store/
+.yarn/install-state.gz
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.yarnrc.yml
+.yarnrc
+yarn.lock # Или package-lock.json - зависит от менеджера, часто их коммитят, но можно и игнорировать
+# package-lock.json # Раскомментируйте, если не хотите его коммитить
+
+# Файлы IDE (WebStorm, VSCode и др.)
+.idea/
+.vscode/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Файлы операционной системы
+.DS_Store
+Thumbs.db
+
+# Временные файлы тестов
+coverage/
+.nyc_output/
+
+# Другое
+*.gz
+node_modules
+available_shiki_ids.json

@@ -1,0 +1,17 @@
+/* [client/src/components/Pagination/Pagination.module.css] */
+
+.pagination { display: flex; justify-content: center; align-items: center; gap: var(--spacing-3); /* Увеличили gap */ margin-top: var(--spacing-10); padding-bottom: var(--spacing-6); }
+.pageButton { background-color: var(--background-card); color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); width: 40px; /* Сделали кнопки шире */ height: 40px; padding: 0; font-size: var(--font-size-lg); /* Увеличили стрелки */ font-weight: 500; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color var(--transition-duration-fast), color var(--transition-duration-fast), border-color var(--transition-duration-fast), transform 0.1s ease-out; line-height: 1; }
+.pageButton:not(:disabled):hover { background-color: var(--background-tertiary); border-color: var(--border-color-light); color: var(--text-header); }
+/* Убрали стиль .active, так как нет конкретных номеров страниц */
+.pageButton:disabled { opacity: 0.4; cursor: not-allowed; }
+.pageButton:active:not(:disabled) { transform: translateY(1px); }
+.arrowButton {}
+.currentPageDisplay { /* Стиль для отображения номера текущей страницы */
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    min-width: 60px;
+    text-align: center;
+}
+/* Убрали стиль .dots */

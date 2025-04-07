@@ -1,0 +1,20 @@
+/* [client/src/components/Profile/AnimeListItem.module.css] */
+
+.listWrapper { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); overflow: hidden; background-color: var(--background-card); }
+.listItem { display: grid; grid-template-columns: 40px 1fr auto auto auto; align-items: center; gap: var(--spacing-4); padding: var(--spacing-3) var(--spacing-4); border-bottom: 1px solid var(--border-color); background-color: transparent; transition: background-color 0.15s; font-size: var(--font-size-sm); position: relative; overflow: hidden; }
+.listItem:last-child { border-bottom: none; }
+.listItem:hover { background-color: var(--background-tertiary); }
+.listItem::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background-color: var(--border-color-light); opacity: 0.7; transition: background-color 0.2s; }
+.listItem.status_watching::before { background-color: var(--accent-success); opacity: 1; }
+.listItem.status_planned::before { background-color: var(--accent-info); opacity: 1; }
+.listItem.status_completed::before { background-color: var(--accent-1); opacity: 1; }
+.listItem.status_on_hold::before { background-color: var(--accent-warning); opacity: 1; }
+.listItem.status_dropped::before { background-color: var(--accent-danger); opacity: 1; }
+.itemPoster { width: 40px; height: 60px; object-fit: cover; border-radius: 3px; background-color: var(--background-tertiary); display: block; }
+.itemInfo { min-width: 0; display: flex; flex-direction: column; }
+.itemTitleLink { color: var(--text-base); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.15s; }
+.itemTitleLink:hover { color: var(--accent-1); text-decoration: none; }
+.itemStatus, .itemProgress, .itemRating { color: var(--text-secondary); white-space: nowrap; text-align: center; min-width: 70px; padding: 0 var(--spacing-1); font-size: var(--font-size-xs); }
+.itemRating { font-weight: 600; min-width: 50px; font-size: var(--font-size-sm); }
+.itemRating[data-value="–"] { color: var(--text-muted); font-weight: 400; }
+@media (max-width: 768px) { .listItem { grid-template-columns: 35px 1fr auto; gap: var(--spacing-3); padding: var(--spacing-2); } .itemPoster { width: 35px; height: 52px; } .itemStatus, .itemProgress { display: none; } .itemRating { text-align: right; min-width: 40px; padding: 0; } }

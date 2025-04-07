@@ -1,0 +1,24 @@
+/* [client/src/components/AnimeListEditModal/AnimeListEditModal.module.css] */
+
+.modalForm { display: flex; flex-direction: column; gap: var(--spacing-5); }
+.formRow { display: grid; grid-template-columns: 100px 1fr; align-items: center; gap: var(--spacing-4); transition: opacity 0.2s; }
+.rowDisabled { opacity: 0.5; pointer-events: none; }
+.rowDisabled .label { color: var(--text-extra-muted); }
+.label { font-size: var(--font-size-sm); font-weight: 500; color: var(--text-secondary); text-align: right; white-space: nowrap; }
+.selectInput { width: 100%; background-color: var(--background-tertiary); color: var(--text-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: var(--spacing-2) var(--spacing-3); font-size: var(--font-size-sm); cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right var(--spacing-3) center; background-repeat: no-repeat; background-size: 1em 1em; transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s; }
+.selectInput:focus { outline: none; border-color: var(--border-color-accent); background-color: var(--background-card); box-shadow: 0 0 0 3px var(--accent-glow); }
+.selectInput:hover:not(:disabled):not(:focus) { border-color: var(--border-color-light); }
+.selectInput:disabled { opacity: 0.7; cursor: not-allowed; background-color: var(--background-card); border-color: var(--border-color); }
+.errorMessage { color: var(--accent-danger); background-color: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.4); padding: var(--spacing-3); border-radius: var(--border-radius-md); font-size: var(--font-size-sm); text-align: center; margin-top: var(--spacing-2); }
+.buttonContainer { margin-top: var(--spacing-6); display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-3); flex-wrap: wrap; }
+.buttonSpacer { flex-basis: 100px; flex-shrink: 0; /* Не сжимать */ }
+.confirmButtons { display: flex; gap: var(--spacing-3); }
+.modalButton { padding: var(--spacing-2) var(--spacing-5); border-radius: var(--border-radius-md); font-weight: 600; font-size: var(--font-size-sm); cursor: pointer; transition: background-color 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s, transform 0.1s ease-out, box-shadow 0.1s ease-out; border: 1px solid transparent; min-width: 100px; text-align: center; box-shadow: var(--shadow-sm); }
+.modalButton:active:not(:disabled) { transform: translateY(1px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.15); } /* Исправленная анимация */
+.modalButton:disabled { opacity: 0.5; cursor: not-allowed; }
+.primaryButton { background-color: var(--accent-2); color: var(--text-header); border-color: var(--accent-2); }
+.primaryButton:hover:not(:disabled) { background-color: var(--accent-1); border-color: var(--accent-1); color: var(--background-primary); }
+.secondaryButton { background-color: transparent; color: var(--text-secondary); border-color: var(--border-color-light); }
+.secondaryButton:hover:not(:disabled) { background-color: var(--background-tertiary); border-color: var(--border-color); color: var(--text-header); }
+.deleteButton { background-color: transparent; color: var(--accent-danger); border-color: rgba(248, 113, 113, 0.4); box-shadow: none; }
+.deleteButton:hover:not(:disabled) { background-color: rgba(248, 113, 113, 0.1); border-color: var(--accent-danger); color: var(--accent-danger); box-shadow: var(--shadow-sm); }

@@ -1,0 +1,141 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный темный фон */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100; /* Выше хедера */
+    padding: var(--spacing-4);
+    /* Анимация появления */
+    opacity: 0;
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modalContent {
+    background-color: var(--background-card); /* Фон как у карточки */
+    padding: var(--spacing-6) var(--spacing-8);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 500px; /* Макс ширина модалки */
+    position: relative;
+    /* Анимация появления */
+    transform: scale(0.95);
+    animation: scaleIn 0.2s ease-out forwards;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.95); }
+    to { transform: scale(1); }
+}
+
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-6);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modalTitle {
+    font-size: var(--font-size-xl);
+    color: var(--text-header);
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: var(--font-size-2xl);
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0 var(--spacing-1);
+    transition: color var(--transition-duration-fast);
+}
+.closeButton:hover {
+    color: var(--text-header);
+}
+
+.modalBody {
+    /* Стили для контента внутри модалки */
+}
+
+/* Стили для элементов формы внутри модалки (можно переиспользовать из AuthForm) */
+.modalBody .inputGroup {
+    margin-bottom: var(--spacing-4);
+}
+.modalBody .label {
+    display: block; /* Чтобы label был над input */
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-1);
+}
+.modalBody .input {
+    width: 100%; /* Инпут на всю ширину */
+    background-color: var(--background-tertiary);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-3);
+    font-size: var(--font-size-base);
+    color: var(--text-base);
+    transition: border-color var(--transition-duration-fast), box-shadow var(--transition-duration-fast);
+}
+.modalBody .input:focus {
+    outline: none;
+    border-color: var(--accent-1);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.modalBody .buttonContainer {
+    margin-top: var(--spacing-6);
+    display: flex;
+    justify-content: flex-end; /* Кнопки справа */
+    gap: var(--spacing-3);
+}
+
+.modalBody .modalButton {
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+}
+.modalBody .modalButton.primary {
+    background-color: var(--accent-2);
+    color: var(--text-header);
+    border: 1px solid var(--accent-2);
+}
+.modalBody .modalButton.primary:hover:not(:disabled) {
+    background-color: var(--accent-1);
+    color: var(--background-primary);
+    border-color: var(--accent-1);
+}
+.modalBody .modalButton.secondary {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color-light);
+}
+.modalBody .modalButton.secondary:hover:not(:disabled) {
+    background-color: var(--background-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-header);
+}
+.modalBody .modalButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

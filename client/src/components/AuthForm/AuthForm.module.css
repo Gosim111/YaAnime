@@ -1,0 +1,148 @@
+.authContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    padding: var(--spacing-12) var(--spacing-4);
+}
+
+.formWrapper {
+    background-color: var(--background-card);
+    padding: var(--spacing-8) var(--spacing-10);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--shadow-md);
+}
+
+.title {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* --- СТИЛИ ДЛЯ ПОЛЯ С ПРЕФИКСОМ (@) --- */
+.inputPrefixWrapper {
+    position: relative; /* Для позиционирования префикса */
+    display: flex; /* Можно использовать flex для выравнивания */
+    align-items: center;
+    background-color: var(--background-tertiary); /* Фон как у инпута */
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-md);
+    transition: border-color var(--transition-duration-fast), box-shadow var(--transition-duration-fast);
+}
+.inputPrefixWrapper:focus-within { /* Стилизация обертки при фокусе внутри */
+    border-color: var(--accent-1);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.inputPrefix {
+    padding-left: var(--spacing-3);
+    color: var(--text-muted); /* Приглушенный цвет для @ */
+    font-size: var(--font-size-base);
+    user-select: none; /* Запретить выделение @ */
+}
+
+.input {
+    background-color: transparent; /* Убираем фон у самого инпута */
+    border: none; /* Убираем рамку у самого инпута */
+    /* border-radius: var(--border-radius-md); */ /* Скругление теперь на обертке */
+    padding: var(--spacing-3);
+    padding-left: var(--spacing-1); /* Уменьшаем левый отступ, т.к. есть @ */
+    font-size: var(--font-size-base);
+    color: var(--text-base);
+    /* transition: border-color var(--transition-duration-fast), box-shadow var(--transition-duration-fast); */ /* Transition на обертке */
+    width: 100%; /* Занимает всю ширину обертки */
+}
+.input:focus {
+    outline: none;
+    /* Стили фокуса теперь на обертке */
+    /* border-color: var(--accent-1); */
+    /* box-shadow: 0 0 0 2px var(--accent-glow); */
+}
+/* Убираем отдельный фон/рамку для обычных инпутов, если нужно */
+.input.standalone {
+    background-color: var(--background-tertiary);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-md);
+    transition: border-color var(--transition-duration-fast), box-shadow var(--transition-duration-fast);
+}
+.input.standalone:focus {
+    border-color: var(--accent-1);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+/* --- КОНЕЦ СТИЛЕЙ ДЛЯ ПРЕФИКСА --- */
+
+
+.errorMessage {
+    color: #f87171;
+    background-color: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    text-align: center;
+    margin-top: var(--spacing-2);
+    margin-bottom: 0;
+}
+
+.submitButton {
+    background-color: var(--accent-2);
+    color: var(--text-header);
+    padding: var(--spacing-3) var(--spacing-5);
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    text-align: center;
+    margin-top: var(--spacing-6);
+    transition: background-color var(--transition-duration-medium), transform var(--transition-duration-fast);
+}
+
+.submitButton:hover:not(:disabled) {
+    background-color: var(--accent-1);
+    color: var(--background-primary);
+    transform: translateY(-1px);
+}
+.submitButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.submitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.switchLink {
+    margin-top: var(--spacing-6);
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+}
+
+.switchLink a {
+    font-weight: 500;
+    color: var(--accent-1);
+}
+
+.switchLink a:hover {
+    color: var(--accent-2);
+    text-decoration: underline;
+}

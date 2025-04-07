@@ -1,0 +1,140 @@
+/* [client/src/components/Catalog/AnimeListItem.module.css] */
+
+.listItem {
+    display: flex;
+    gap: var(--spacing-5);
+    background-color: var(--background-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-4);
+    transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    overflow: hidden; /* Чтобы скругление работало */
+    box-shadow: var(--shadow-sm);
+}
+.listItem:hover {
+    border-color: var(--border-color-light);
+    background-color: var(--background-tertiary);
+    box-shadow: var(--shadow-md);
+}
+
+.posterLink {
+    flex-shrink: 0;
+    width: 90px; /* Фиксированная ширина постера */
+    display: block; /* Убирает лишний отступ снизу */
+}
+.poster {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3; /* Сохраняем пропорции */
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
+    background-color: var(--background-tertiary); /* Фон на случай ошибки */
+    transition: transform 0.3s ease;
+}
+.listItem:hover .poster {
+    transform: scale(1.03);
+}
+
+.infoBlock {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2); /* Отступы между элементами внутри блока */
+    min-width: 0; /* Для работы text-overflow */
+}
+
+.titleLink {
+    color: inherit;
+    text-decoration: none;
+}
+.title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-header);
+    margin: 0 0 var(--spacing-1);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s;
+}
+.titleLink:hover .title {
+    color: var(--accent-1);
+}
+
+.metaBadges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    align-items: center;
+}
+/* Стили для бейджей берутся из AnimeCard.module.css через импорт */
+
+.studios, .description {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+.description {
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Ограничиваем 2 строками */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: var(--spacing-1);
+}
+
+.ratingBlock {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Выравнивание по правому краю */
+    gap: var(--spacing-3);
+    margin-left: var(--spacing-4); /* Отступ от основного контента */
+}
+.ratingItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    color: var(--accent-warning);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+}
+.ratingItem svg {
+    width: 16px; height: 16px;
+    fill: currentColor; /* Заполняем иконку цветом текста */
+}
+
+/* Адаптация */
+@media (max-width: 768px) {
+    .listItem {
+        gap: var(--spacing-4);
+        padding: var(--spacing-3);
+    }
+    .posterLink { width: 70px; }
+    .title { font-size: var(--font-size-base); -webkit-line-clamp: 2; }
+    .studios { display: none; } /* Скрываем студии */
+    .description { -webkit-line-clamp: 1; } /* Одну строку описания */
+    .ratingBlock { margin-left: var(--spacing-2); }
+    .ratingItem span { font-size: var(--font-size-xs); }
+    .ratingItem svg { width: 14px; height: 14px; }
+}
+
+@media (max-width: 480px) {
+    .listItem { flex-direction: column; align-items: flex-start; }
+    .posterLink { width: 100%; max-width: 120px; margin-bottom: var(--spacing-3); }
+    .poster { aspect-ratio: 16 / 9; /* Делаем шире */ }
+    .ratingBlock {
+        margin-left: 0;
+        margin-top: var(--spacing-2);
+        align-self: flex-start; /* Выравниваем по левому краю */
+    }
+    .metaBadges :global(.badge) { /* Используем :global для доступа к классу из другого модуля */
+        font-size: 0.65rem; /* Еще меньше бейджи */
+        padding: 1px var(--spacing-1);
+    }
+}

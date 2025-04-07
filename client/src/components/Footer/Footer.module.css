@@ -1,0 +1,21 @@
+.footer {
+    /* Используем фон контейнера */
+    background-color: var(--background-container);
+    padding: var(--spacing-6) 0; /* Увеличим отступ */
+    margin-top: auto; /* Прижимает футер к низу */
+    /* Используем основной цвет границы */
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted); /* Приглушенный цвет текста */
+}
+
+/* Общий контейнер для центрирования */
+.container {
+    width: 90%;
+    max-width: 1440px; /* Синхронизируем с хедером */
+    margin: 0 auto;
+}
+
+.footerContainer {
+    text-align: center;
+    font-size: var(--font-size-sm);
+}

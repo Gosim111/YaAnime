@@ -1,0 +1,90 @@
+/* [client/src/pages/CatalogPage.module.css] */
+
+.catalogPage {
+    display: flex;
+    gap: var(--spacing-8);
+    padding: var(--spacing-8) var(--spacing-6);
+    max-width: 1800px; /* Ограничим максимальную ширину */
+    margin: 0 auto;
+    position: relative; /* Для мобильного оверлея */
+}
+
+.mainContent {
+    flex-grow: 1;
+    min-width: 0; /* Предотвращает выход контента за пределы */
+    display: flex;
+    flex-direction: column;
+}
+
+.mobileFilterButton { /* Кнопка открытия фильтров на мобилке */
+    display: none; /* Скрыта по умолчанию */
+    position: fixed;
+    bottom: var(--spacing-5);
+    right: var(--spacing-5);
+    z-index: 990; /* Выше кнопки "наверх", но ниже модалок */
+    background-image: var(--background-accent-gradient);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    transition: transform 0.2s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mobileFilterButton:hover { transform: scale(1.1); }
+.mobileFilterButton svg { width: 22px; height: 22px; }
+
+.mobileOverlay { /* Затемнение фона при открытии моб. фильтров */
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1040; /* Под сайдбаром */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.mobileOverlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Адаптивность */
+@media (max-width: 992px) {
+    .catalogPage {
+        flex-direction: column; /* Столбиком */
+        gap: var(--spacing-6);
+        padding: var(--spacing-6) var(--spacing-4);
+    }
+    .mobileFilterButton {
+        display: flex; /* Показываем кнопку */
+    }
+    /* Сайдбар скрыт по умолчанию и выезжает */
+    :global(.filterSidebar) { /* Обращение к глобальному классу, т.к. он импортирован */
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 300px; /* Фиксированная ширина */
+        max-width: 85%;
+        z-index: 1050;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-out;
+        overflow-y: auto; /* Скролл внутри сайдбара */
+        height: 100vh; /* На всю высоту */
+        background-color: var(--background-primary); /* Фон, чтобы перекрыть контент */
+    }
+    :global(.filterSidebar.mobileOpen) {
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .catalogPage { padding: var(--spacing-4) var(--spacing-2); }
+    .mobileFilterButton { width: 45px; height: 45px; bottom: var(--spacing-4); right: var(--spacing-4); }
+    .mobileFilterButton svg { width: 20px; height: 20px; }
+    :global(.filterSidebar) { width: 280px; }
+}
