@@ -1,21 +1,18 @@
-# netlify.toml
+# netlify.toml (в корне проекта)
 
-# Настройки сборки (дублируют UI для ясности)
 [build]
-  command = "npm run build" # Команда выполняется ОТНОСИТЕЛЬНО Base directory
-  publish = "dist"        # Публикуемая папка ОТНОСИТЕЛЬНО Base directory
-  base = "client"         # Указывает, где находится фронтенд
+  command = "npm run build"
+  publish = "dist"
+  base = "client"
 
-# Редирект для SPA (чтобы работала навигация React Router)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Прокси для API запросов
 [[redirects]]
   from = "/api/*"
-  # !!! ЗАМЕНИТЕ НА URL ВАШЕГО БЭКЕНДА НА RENDER !!!
+  # !!! ПЕРЕПРОВЕРЬТЕ ЭТОТ URL !!!
   to = "https://ВАШ_RENDER_URL.onrender.com/:splat"
   status = 200
-  force = true # Важно для API
+  force = true
