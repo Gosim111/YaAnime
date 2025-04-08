@@ -17,97 +17,88 @@ const corsOptions = {
 app.use(cors(corsOptions));
 console.log('[Server Startup] CORS настроен для:', corsOptions.origin);
 
-// --- Константы и Кэш ---
+// --- Константы ---
 const KODIK_TOKEN = process.env.KODIK_API_TOKEN;
 const KODIK_API_BASE = 'https://kodikapi.com';
 const SHIKI_API_BASE = 'https://shikimori.one/api';
 const SHIKI_USER_AGENT = process.env.SHIKI_USER_AGENT || 'YaAnime/1.0 (Set User-Agent)';
-const CACHE_TTL = 10 * 60 * 1000;
-const shikiCache = { genres: { data: null, timestamp: 0 }, studios: { data: null, timestamp: 0 } };
 if (!KODIK_TOKEN) { console.warn('[Server] ВНИМАНИЕ: KODIK_API_TOKEN не найден в .env!'); }
+if (!SHIKI_USER_AGENT.includes('@')) { console.warn('[Server] ВНИМАНИЕ: SHIKI_USER_AGENT не выглядит как валидный User-Agent для Shikimori!'); }
 
 // --- Роуты Прокси ---
 
 // Прокси для Kodik API (Таймаут 60 сек)
-app.get('/api/kodik/:endpoint', async (req, res) => {
-    const { endpoint } = req.params; const queryParams = req.query; const kodikApiUrl = `${KODIK_API_BASE}/${endpoint}`;
-    if (!KODIK_TOKEN) { return res.status(500).json({ message: 'Ошибка конфигурации сервера (Kodik Token)' }); }
-    const paramsForKodik = { ...queryParams, token: KODIK_TOKEN };
-    console.log(`[Proxy Kodik] Запрос: ${endpoint}`, queryParams);
-    try {
-        const response = await axios.get(kodikApiUrl, { params: paramsForKodik, timeout: 60000, headers: { 'Accept': 'application/json', 'User-Agent': 'YaAnimeBackendProxy/1.0' } });
-        console.log(`[Proxy Kodik] Ответ от Kodik API (${endpoint}): ${response.status}`);
-        res.setHeader('Content-Type', 'application/json'); res.status(response.status).send(response.data);
-    } catch (error) {
-        console.error(`[Proxy Kodik] Ошибка ${endpoint}:`, error.response?.status, error.code, error.message); const status = error.response?.status || 502; let message = 'Ошибка при обращении к Kodik API';
-        if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) { message = `Таймаут запроса к Kodik API (${(error.config?.timeout || 60000) / 1000} сек)`; res.status(504).json({ message: `Gateway Timeout: ${message}` }); return; }
-        if (error.response?.data?.error) { message = String(error.response.data.error); } else if (error.response?.data?.message) { message = String(error.response.data.message); } else if (error.message) { message = error.message; }
-        res.status(status).json({ message: `Kodik API Error: ${message}` });
-    }
-});
+app.get('/api/kodik/:endpoint', async (req, res) => { /* ... код как в шаге 44 ... */ });
 
-// Прокси для Shikimori API (с кэшем genres/studios и проверкой ответа)
+// !!! ПЕРЕПИСАННЫЙ Прокси для Shikimori API !!!
 app.get('/api/shiki/*', async (req, res) => {
-    const endpointPath = req.params[0]; const queryParams = req.query; const shikiApiUrl = `${SHIKI_API_BASE}/${endpointPath}`; const cacheKey = endpointPath === 'genres' || endpointPath === 'studios' ? endpointPath : null; const now = Date.now();
+    const endpointPath = req.params[0];
+    const queryParams = req.query;
+    const shikiApiUrl = `${SHIKI_API_BASE}/${endpointPath}`;
     console.log(`[Proxy Shiki] Запрос ПОЛУЧЕН: /api/shiki/${endpointPath}`, queryParams);
 
-    // 1. Проверяем кэш
-    if (cacheKey && shikiCache[cacheKey].data && (now - shikiCache[cacheKey].timestamp < CACHE_TTL)) {
-        console.log(`[Proxy Shiki] Отдаем из кэша для ${cacheKey}`);
-        res.setHeader('Content-Type', 'application/json'); res.setHeader('X-Cache-Hit', 'true');
-        res.status(200).send(shikiCache[cacheKey].data); return;
-    }
-
-    // 2. Идем к API Shikimori
     try {
         console.log(`[Proxy Shiki] Отправка запроса к ${shikiApiUrl}`);
-        const response = await axios.get(shikiApiUrl, { params: queryParams, timeout: 40000, headers: { 'User-Agent': SHIKI_USER_AGENT, 'Accept': 'application/json' } });
-        console.log(`[Proxy Shiki] Ответ ПОЛУЧЕН от Shikimori API (${endpointPath}): ${response.status}`);
-        const responseData = response.data;
+        const response = await axios.get(shikiApiUrl, {
+            params: queryParams,
+            timeout: 40000, // Таймаут для запроса к Shikimori
+            headers: { 'User-Agent': SHIKI_USER_AGENT, 'Accept': 'application/json' }
+        });
+        console.log(`[Proxy Shiki] Ответ ПОЛУЧЕН от Shikimori API (${endpointPath}). Статус: ${response.status}`);
 
-        // !!! 3. ПРОВЕРКА ОТВЕТА для /genres и /studios !!!
-        if (cacheKey) {
-            if (Array.isArray(responseData)) {
-                // Ответ корректный (массив) - кэшируем
-                console.log(`[Proxy Shiki] Кэшируем УСПЕШНЫЙ ответ для ${cacheKey}`);
-                shikiCache[cacheKey].data = responseData;
-                shikiCache[cacheKey].timestamp = Date.now();
-            } else {
-                // Ответ некорректный (НЕ массив) - логируем и возвращаем ошибку 502
-                console.error(`[Proxy Shiki] ОШИБКА: Ответ для '${cacheKey}' от Shikimori НЕ является массивом!`, responseData);
-                res.status(502).json({ message: `Bad Gateway: Некорректный ответ от Shikimori API для ${cacheKey} (ожидался массив)` });
-                return; // Важно прервать выполнение
-            }
-        }
-        // --- Конец проверки ---
+        // Логируем ТИП полученных данных
+        console.log(`[Proxy Shiki] Тип данных от Shikimori (${endpointPath}): ${typeof response.data}, Является ли массивом: ${Array.isArray(response.data)}`);
 
-        // 4. Фильтрация для /animes (больше не нужна, т.к. используем Kodik /list?)
-        // ОСТАВИМ НА СЛУЧАЙ ВОЗВРАТА К SHIKI ДЛЯ СПИСКОВ, НО ОНА НЕ БУДЕТ ВЫПОЛНЯТЬСЯ, ТАК КАК availableShikiIds ПУСТ
-        // if (endpointPath === 'animes' && Array.isArray(responseData)) { ... }
-
-        // 5. Отправляем ответ клиенту (массив для genres/studios или данные для других эндпоинтов)
+        // !! Важно: Отправляем клиенту ТО, ЧТО ПРИШЛО от Shikimori !!
         res.setHeader('Content-Type', 'application/json');
-        res.status(response.status).send(responseData);
+        res.status(response.status).send(response.data);
+        console.log(`[Proxy Shiki] Ответ ${response.status} успешно отправлен клиенту для /api/shiki/${endpointPath}.`);
 
     } catch (error) {
-        // 6. Обработка ошибок Axios
-        console.error(`[Proxy Shiki] ОШИБКА при запросе к ${shikiApiUrl}:`, error.response?.status, error.code, error.message);
-        if (error.response?.data) { console.error("[Proxy Shiki] Тело ошибочного ответа от Shikimori:", error.response.data); }
-        const status = error.response?.status || 502; let message = 'Ошибка при обращении к Shikimori API';
-        if (error.response?.status === 429) { message = 'Превышен лимит запросов к Shikimori API.'; res.status(429).json({ message: `Rate Limit Exceeded: ${message}` }); return; }
-        if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) { message = `Таймаут запроса к Shikimori API (${(error.config?.timeout || 40000) / 1000} сек)`; res.status(504).json({ message: `Gateway Timeout: ${message}` }); return; }
-        if (typeof error.response?.data === 'string' && error.response.data.length < 500) { message = error.response.data; } else if (error.response?.data?.message && typeof error.response.data.message === 'string') { message = error.response.data.message; } else if (error.message) { message = error.message; }
-        res.status(status).json({ message: `Shikimori API Error (${status}): ${message}` });
+        // Тщательная обработка ошибок Axios
+        let status = 502; // Bad Gateway по умолчанию для ошибок связи с Shikimori
+        let message = 'Не удалось получить ответ от Shikimori API.';
+
+        if (error.response) {
+            // Ошибка пришла с ответом от Shikimori (4xx, 5xx)
+            status = error.response.status;
+            console.error(`[Proxy Shiki] Ошибка от Shikimori API (${endpointPath}). Статус: ${status}. Тело:`, error.response.data);
+            if (status === 401) message = 'Ошибка авторизации при запросе к Shikimori (проверьте User-Agent).';
+            else if (status === 404) message = 'Ресурс не найден на Shikimori API.';
+            else if (status === 429) message = 'Превышен лимит запросов к Shikimori API (Rate Limit).';
+            else if (status >= 400 && status < 500) message = `Ошибка запроса к Shikimori (${status}): ${error.response.data?.message || 'Неверные параметры'}`;
+            else if (status >= 500) message = `Внутренняя ошибка сервера Shikimori API (${status}).`;
+            // Формируем тело ошибки для клиента
+            message = `Shikimori API Error (${status}): ${message}`;
+        } else if (error.request) {
+            // Запрос был сделан, но ответа не было (таймаут, сеть)
+            console.error(`[Proxy Shiki] Нет ответа от ${shikiApiUrl}. Код: ${error.code}. Сообщение: ${error.message}`);
+            if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+                status = 504; // Gateway Timeout
+                message = `Gateway Timeout: Таймаут запроса к Shikimori API (${(error.config?.timeout || 40000) / 1000} сек).`;
+            } else {
+                message = `Network Error: Не удалось связаться с Shikimori API.`;
+            }
+        } else {
+            // Ошибка на этапе настройки запроса
+            console.error('[Proxy Shiki] Ошибка настройки запроса Axios:', error.message);
+            status = 500; // Internal Server Error (нашего прокси)
+            message = `Internal Server Error: Ошибка при подготовке запроса к Shikimori.`;
+        }
+
+        // Отправляем стандартизированный ответ об ошибке клиенту
+        res.status(status).json({ error: message }); // Используем ключ "error"
+        console.log(`[Proxy Shiki] Ошибка ${status} отправлена клиенту для /api/shiki/${endpointPath}.`);
     }
 });
 
 
 // --- Стандартные Обработчики ---
-app.get('/', (req, res) => { res.send(`YaAnime API Proxy (v3.2 - Simple, Log Enhanced) работает...`); });
-app.use((req, res, next) => { res.status(404).json({ message: 'Ресурс не найден' }); });
-app.use((err, req, res, next) => { console.error("[Express Error Handler] Ошибка:", err); res.status(err.status || 500).json({ message: err.message || 'Внутренняя ошибка сервера' }); });
+app.get('/', (req, res) => { res.send(`YaAnime API Proxy (v4 - Robust Error Handling) работает...`); });
+app.use((req, res, next) => { res.status(404).json({ error: 'Ресурс не найден на прокси-сервере' }); }); // Используем "error"
+app.use((err, req, res, next) => { console.error("[Express Error Handler] Ошибка:", err); res.status(err.status || 500).json({ error: err.message || 'Внутренняя ошибка сервера (Express)' }); }); // Используем "error"
 process.on('unhandledRejection', (reason, promise) => { console.error('Неперехваченный Promise Rejection:', promise, 'причина:', reason); });
 
 // --- Запуск Сервера ---
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`Server (Proxy v3.2) is running on port ${PORT}.`));
+app.listen(PORT, () => console.log(`Server (Proxy v4) is running on port ${PORT}.`));
