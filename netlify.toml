@@ -5,6 +5,7 @@
 
 [[redirects]]
   from = "/api/*"
+
   to = "https://yaanime.onrender.com/:splat"
   status = 200
   force = true
