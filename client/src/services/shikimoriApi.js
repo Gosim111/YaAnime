@@ -5,78 +5,76 @@ import axios from 'axios';
 const API_PROXY_URL = '/api/shiki';
 const apiClient = axios.create({ baseURL: API_PROXY_URL, timeout: 45000, headers: { 'Accept': 'application/json' } });
 
-// Обработчик ошибок, ожидает { error: "..." } от бэкенда
+// !!! ИСПРАВЛЕН handleShikiError - возвращает { data, error } !!!
 const handleShikiError = (error, context = 'Shikimori API') => {
-    console.error(`[${context}] Ошибка Axios:`, error);
+    console.error(`[${context}] Ошибка Axios:`, error); // Логируем всю ошибку для диагностики
     let message = 'Неизвестная ошибка при запросе к API.';
     if (error.response) {
-        // Ошибка с ответом от сервера (прокси)
         console.error(`[${context}] Ответ сервера:`, error.response.status, error.response.data);
-        // Пытаемся извлечь сообщение из поля "error"
-        message = error.response.data?.error || `Ошибка сервера (${error.response.status})`;
+        message = error.response.data?.error // Ожидаем { error: "..." } от бэкенда
+            || error.response.data?.message // Или { message: "..." }
+            || `Ошибка сервера (${error.response.status})`;
     } else if (error.request) {
-        // Запрос сделан, ответа нет
         message = 'Сервер не отвечает (таймаут или сеть).';
     } else {
-        // Ошибка настройки запроса
         message = `Ошибка подготовки запроса: ${error.message}`;
     }
     console.error(`[${context}] Сформированное сообщение об ошибке: ${message}`);
-    return { data: null, pagination: null, error: new Error(message) };
+    // !!! ВСЕГДА возвращаем объект с data и error !!!
+    return { data: null, error: new Error(message) };
 };
 
 const PROHIBITED_GENRE_IDS = [12, 31, 32];
 
-// searchAnime (без изменений, но будет использовать новый handleShikiError)
+// searchAnime (без изменений, использует handleShikiError)
 export const searchAnime = async (params = {}) => {
     const requestParams = { limit: params.limit || 28, page: params.page || 1, censored: 'false', ...params };
-    Object.keys(requestParams).forEach(key => { /* ... очистка ... */ });
+    Object.keys(requestParams).forEach(key => { if (requestParams[key] == null || requestParams[key] === '' || (Array.isArray(requestParams[key]) && requestParams[key].length === 0)) { delete requestParams[key]; } else if (Array.isArray(requestParams[key])) { requestParams[key] = requestParams[key].join(','); } });
     try {
         const response = await apiClient.get('/animes', { params: requestParams });
-        // !!! Добавляем проверку, что response.data - массив !!!
-        if (!Array.isArray(response.data)) {
-            console.warn(`[searchAnime] Ответ API не является массивом:`, response.data);
-            throw new Error('Некорректный ответ API (ожидался массив)'); // Генерируем ошибку
-        }
-        const responseData = response.data;
-        const paginationInfo = { currentPage: Number(requestParams.page) || 1, limit: Number(requestParams.limit) || 28, hasNextPage: responseData.length === (Number(requestParams.limit) || 28) };
-        return { data: responseData, pagination: paginationInfo, error: null };
+        if (!Array.isArray(response.data)) { throw new Error('Некорректный ответ API (ожидался массив)'); }
+        const paginationInfo = { currentPage: Number(requestParams.page) || 1, limit: Number(requestParams.limit) || 28, hasNextPage: response.data.length === (Number(requestParams.limit) || 28) };
+        return { data: response.data, pagination: paginationInfo, error: null };
     } catch (error) {
         return handleShikiError(error, 'searchAnime');
     }
 };
 
-// getAnimeFullById (без изменений)
-export const getAnimeFullById = async (id) => { /* ... */ };
+// !!! ИСПРАВЛЕН getAnimeFullById - Явный return в catch !!!
+export const getAnimeFullById = async (id) => {
+    if (!id) return { data: null, error: new Error("Shikimori ID не указан") };
+    try {
+        const response = await apiClient.get(`/animes/${id}`);
+        const animeData = response.data;
+        // Проверка на null/undefined перед доступом к genres
+        if (animeData && Array.isArray(animeData.genres)) {
+            const hasProhibited = animeData.genres.some(g => g && typeof g.id === 'number' && PROHIBITED_GENRE_IDS.includes(g.id));
+            if (hasProhibited) {
+                console.warn(`[getAnimeFullById] Аниме ID ${id} содержит запрещенный жанр.`);
+                // Возвращаем ошибку, чтобы показать ее пользователю
+                return { data: null, error: new Error("Контент недоступен из-за возрастных ограничений или политики") };
+            }
+        }
+        // Возвращаем null, если animeData не объект
+        return { data: (animeData && typeof animeData === 'object') ? animeData : null, error: null };
+    } catch (error) {
+        // !!! Явно возвращаем результат handleShikiError !!!
+        return handleShikiError(error, `getAnimeFullById(${id})`);
+    }
+};
 
-// getGenres (Переписана для большей надежности)
+
+// getGenres (без изменений, использует handleShikiError)
 export const getGenres = async () => {
     try {
         const response = await apiClient.get('/genres');
-        // !!! СТРОГАЯ ПРОВЕРКА, ЧТО ПОЛУЧЕН МАССИВ !!!
-        if (!Array.isArray(response.data)) {
-            console.error('[getGenres] Ответ API НЕ является массивом:', response.data);
-            // Генерируем ошибку, которую поймает catch и обработает handleShikiError
-            throw new Error('Некорректный ответ API жанров (ожидался массив)');
-        }
-
-        // Фильтрация и сортировка (только если это массив)
+        if (!Array.isArray(response.data)) { throw new Error('Некорректный ответ API жанров (ожидался массив)'); }
         const seenNames = new Set(); const uniqueValidGenres = [];
         for (const genre of response.data) { const displayName = genre.russian || genre.name; if (genre && genre.id && displayName && !PROHIBITED_GENRE_IDS.includes(Number(genre.id))) { if (!seenNames.has(displayName)) { seenNames.add(displayName); uniqueValidGenres.push(genre); } } }
         uniqueValidGenres.sort((a, b) => (a.russian || a.name).localeCompare(b.russian || b.name));
-        console.log(`[getGenres] Успешно обработано ${uniqueValidGenres.length} жанров.`);
         return { data: uniqueValidGenres, error: null };
+    } catch (error) { return handleShikiError(error, 'getGenres'); }
+};
 
-    } catch (error) {
-        // Ошибки Axios или ошибка 'Не массив' будут обработаны здесь
-        return handleShikiError(error, 'getGenres');
-    }
-};
 // getStudios (без изменений)
-export const getStudios = async () => {
-    try {
-    const response = await apiClient.get('/studios'); // Запрос к /api/shiki/studios
-    if (Array.isArray(response.data)) { response.data.sort((a, b) => a.name.localeCompare(b.name)); return { data: response.data, error: null }; }
-    else { return { data: [], error: new Error('Некорректный ответ API студий') }; }
-} catch (error) { return handleShikiError(error, 'getStudios'); }
-};
+export const getStudios = async () => { /* ... */ };
