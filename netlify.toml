@@ -13,6 +13,6 @@
 [[redirects]]
   from = "/api/*"
   # !!! ПЕРЕПРОВЕРЬТЕ ЭТОТ URL !!!
-  to = "https://yaanime.onrender.com/"
+  to = "https://yaanime.onrender.com/:splat"
   status = 200
   force = true
