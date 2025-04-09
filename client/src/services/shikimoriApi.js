@@ -7,11 +7,10 @@ const API_BASE = import.meta.env.DEV
     ? '/api/shiki' // В разработке используем прокси Vite
     : `${import.meta.env.VITE_API_BASE_URL || ''}/api/shiki`; // В продакшене используем переменную окружения
 
-// !!! Лог для проверки !!!
 console.log(`[ShikiAPI Client] Используемый API_BASE: ${API_BASE}`);
 
 const apiClient = axios.create({
-    baseURL: API_BASE, // Используем определенный выше URL
+    baseURL: API_BASE,
     timeout: 45000, // Оставляем увеличенный таймаут
     headers: { 'Accept': 'application/json' }
 });
@@ -25,7 +24,7 @@ const handleShikiError = (error, context = 'Shikimori API') => {
     else if (error.response?.data?.message && error.response?.data?.message.startsWith('Gateway Timeout:')) { message = error.response.data.message; }
     else if (error.response?.data?.message && error.response?.data?.message.startsWith('Rate Limit Exceeded:')) { message = error.response.data.message; }
     else if (error.response?.status === 401) { message = 'Ошибка аутентификации прокси'; }
-    else if (error.response?.status === 404) { message = 'Ресурс не найден.'; } // Может быть от прокси или от Shikimori
+    else if (error.response?.status === 404) { message = 'Ресурс не найден.'; }
     else if (error.response?.status === 429) { message = 'Превышен лимит запросов (429). Попробуйте позже.'; }
     else if (error.response?.status === 400 || error.response?.status === 422) { message = `Неверные параметры запроса (${error.response.status})`; }
     else if (error.response?.status >= 500) { message = `Ошибка сервера (${error.response.status}). Попробуйте позже.`; }
@@ -35,19 +34,14 @@ const handleShikiError = (error, context = 'Shikimori API') => {
 };
 
 
-const ITEMS_PER_PAGE_CATALOG = 28; // Лимит для каталога
-const PROHIBITED_GENRE_IDS = [12, 31, 32]; // Hentai, Yaoi, Yuri
+const ITEMS_PER_PAGE_CATALOG = 28;
+// --- УДАЛЕНА КОНСТАНТА PROHIBITED_GENRE_IDS ---
 
-// Функция для получения списков аниме (используется HomePage и CatalogPage)
+// Функция для получения списков аниме (без изменений)
 export const searchAnime = async (params = {}) => {
     const requestParams = { limit: params.limit || ITEMS_PER_PAGE_CATALOG, page: params.page || 1, censored: 'false', ...params };
-    // Очистка пустых параметров и форматирование массивов
-    Object.keys(requestParams).forEach(key => {
-        if (requestParams[key] === null || requestParams[key] === undefined || requestParams[key] === '') { delete requestParams[key]; }
-        else if (Array.isArray(requestParams[key])) { if (requestParams[key].length > 0) { requestParams[key] = requestParams[key].join(','); } else { delete requestParams[key]; } }
-    });
+    Object.keys(requestParams).forEach(key => { if (requestParams[key] === null || requestParams[key] === undefined || requestParams[key] === '' || (Array.isArray(requestParams[key]) && requestParams[key].length === 0)) { delete requestParams[key]; } else if (Array.isArray(requestParams[key])) { if (requestParams[key].length > 0) { requestParams[key] = requestParams[key].join(','); } else { delete requestParams[key]; } } });
     try {
-        // Запрос идет к /api/shiki/animes
         const response = await apiClient.get('/animes', { params: requestParams });
         const responseData = response.data || [];
         const paginationInfo = { currentPage: Number(requestParams.page) || 1, limit: Number(requestParams.limit) || ITEMS_PER_PAGE_CATALOG, hasNextPage: responseData.length === (Number(requestParams.limit) || ITEMS_PER_PAGE_CATALOG) };
@@ -55,51 +49,54 @@ export const searchAnime = async (params = {}) => {
     } catch (error) { return handleShikiError(error, 'searchAnime'); }
 };
 
-// Функция для страницы деталей
+// Функция для страницы деталей (удалена проверка на запрещенные жанры)
 export const getAnimeFullById = async (id) => {
     if (!id) return { data: null, error: new Error("Shikimori ID не указан") };
     try {
-        // Запрос идет к /api/shiki/animes/:id
         const response = await apiClient.get(`/animes/${id}`);
         const animeData = response.data;
-        if (animeData && Array.isArray(animeData.genres)) { const hasProhibited = animeData.genres.some(g => PROHIBITED_GENRE_IDS.includes(Number(g.id))); if (hasProhibited) { console.warn(`[ShikiAPI Client] Аниме ID ${id} содержит запрещенный жанр.`); return { data: null, error: new Error("Контент недоступен") }; } }
-        return { data: animeData || null, error: null };
+        // --- УДАЛЕНА ПРОВЕРКА НА ЗАПРЕЩЕННЫЕ ЖАНРЫ ---
+        // if (animeData && Array.isArray(animeData.genres)) { ... }
+        // ---
+        return { data: animeData || null, error: null }; // Просто возвращаем данные
     } catch (error) { return handleShikiError(error, `getAnimeFullById(${id})`); }
 };
 
-// Функция для получения жанров (с фильтрацией)
+// Функция для получения жанров (удалена фильтрация запрещенных ID)
 export const getGenres = async () => {
     try {
-        // Запрос идет к /api/shiki/genres
         const response = await apiClient.get('/genres');
         if (Array.isArray(response.data)) {
-            const seenNames = new Set(); const uniqueValidGenres = [];
+            const seenNames = new Set();
+            const uniqueValidGenres = [];
+            console.log(`[getGenres] Получено ${response.data.length} жанров от API.`);
+
             for (const genre of response.data) {
                 const displayName = genre.russian || genre.name;
-                if (genre && genre.id && displayName && !PROHIBITED_GENRE_IDS.includes(Number(genre.id))) {
-                    if (!seenNames.has(displayName)) { seenNames.add(displayName); uniqueValidGenres.push(genre); }
+                // --- УДАЛЕНА ПРОВЕРКА !PROHIBITED_GENRE_IDS.includes(...) ---
+                if (genre && genre.id && displayName) { // Проверяем только базовое наличие ID и названия
+                    if (!seenNames.has(displayName)) {
+                        seenNames.add(displayName);
+                        uniqueValidGenres.push(genre);
+                    }
                 }
+                // ---
             }
             uniqueValidGenres.sort((a, b) => (a.russian || a.name).localeCompare(b.russian || b.name));
+            console.log(`[getGenres] Возвращаем ${uniqueValidGenres.length} уникальных жанров (без фильтрации запрещенных).`);
             return { data: uniqueValidGenres, error: null };
         } else {
-            console.error('[ShikiAPI Client] Некорректный ответ от /genres:', response.data);
-            return { data: [], error: new Error('Некорректный ответ API жанров') };
+            console.error('[ShikiAPI Client] Некорректный ответ от /genres (не массив):', response.data);
+            return { data: [], error: new Error('Некорректный ответ от API жанров') };
         }
     } catch (error) { return handleShikiError(error, 'getGenres'); }
 };
 
-// Функция для получения студий
+// Функция для получения студий (без изменений)
 export const getStudios = async () => {
     try {
-        // Запрос идет к /api/shiki/studios
         const response = await apiClient.get('/studios');
-        if (Array.isArray(response.data)) {
-            response.data.sort((a, b) => a.name.localeCompare(b.name));
-            return { data: response.data, error: null };
-        } else {
-            console.error('[ShikiAPI Client] Некорректный ответ от /studios:', response.data);
-            return { data: [], error: new Error('Некорректный ответ API студий') };
-        }
+        if (Array.isArray(response.data)) { response.data.sort((a, b) => a.name.localeCompare(b.name)); return { data: response.data, error: null }; }
+        else { return { data: [], error: new Error('Некорректный ответ API студий') }; }
     } catch (error) { return handleShikiError(error, 'getStudios'); }
 };
