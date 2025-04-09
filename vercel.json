@@ -1,5 +1,14 @@
 {
   "routes": [
+
+      { "src": "/assets/(.*)", "dest": "/assets/$1" },
+      { "src": "/images/(.*)", "dest": "/images/$1" },
+      { "src": "/favicon.ico", "dest": "/favicon.ico" },
+      { "src": "/manifest.json", "dest": "/manifest.json" },
+      { "src": "/robots.txt", "dest": "/robots.txt" },
+      { "src": "/kodik.txt", "dest": "/kodik.txt" },
+
+
     {
       "src": "/((?!.*\\.[^.]+$).*)",
       "dest": "/index.html",
