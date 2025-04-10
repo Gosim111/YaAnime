@@ -1,6 +1,7 @@
 // [client/src/App.jsx] - ПРОВЕРЕННЫЙ ВАРИАНТ
 
 import React from 'react';
+import { Analytics } from "@vercel/analytics/react"
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import HomePage from './pages/HomePage.jsx';
