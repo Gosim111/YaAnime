@@ -1,17 +1,14 @@
-// [client/src/services/kodikApi.js]
+// [client/src/services/kodikApi.js] - Версия для Reg.ru хостинга
 
 import axios from 'axios';
 
-// Определяем базовый URL так же, как в shikimoriApi.js
-const API_BASE = import.meta.env.DEV
-    ? '/api/kodik' // В разработке используем прокси Vite
-    : `${import.meta.env.VITE_API_BASE_URL || ''}/api/kodik`; // В продакшене используем переменную окружения
+// !!! ВСЕГДА ИСПОЛЬЗУЕМ ОТНОСИТЕЛЬНЫЙ ПУТЬ !!!
+const API_BASE = '/api/kodik';
 
-// !!! Лог для проверки !!!
 console.log(`[KodikAPI Client] Используемый API_BASE: ${API_BASE}`);
 
 const apiClient = axios.create({
-    baseURL: API_BASE, // Используем определенный выше URL
+    baseURL: API_BASE, // Используем относительный путь
     timeout: 65000, // Увеличенный таймаут
 });
 
@@ -19,26 +16,18 @@ const apiClient = axios.create({
 const handleKodikError = (error, context = 'Kodik API Client') => {
     console.error(`[${context}] Ошибка запроса:`, error.response?.status, error.code, error.message, error.config);
     let message = error.response?.data?.message || error.message || 'Неизвестная ошибка сети или Kodik API';
-
-    // Сообщения об ошибках от нашего прокси
-    if (error.response?.data?.message && error.response?.data?.message.startsWith('Kodik API Error:')) { message = error.response.data.message.replace('Kodik API Error:', '').trim(); }
-    else if (error.response?.data?.message && error.response?.data?.message.startsWith('Gateway Timeout:')) { message = error.response.data.message; }
-    // Таймаут самого фронтенда
+    // Упрощаем, т.к. ошибки могут быть от Nginx или бэкенда
+    if (error.response?.status === 404) { message = `Ресурс плеера не найден (${error.config.url})`; }
+    else if (error.response?.status >= 500) { message = `Ошибка сервера (${error.response.status}) при запросе к API плеера.`; }
     else if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) { message = `Превышено время ожидания ответа от сервера (${(error.config?.timeout || 65000) / 1000} сек)`; }
-    // Другие статусы ответа от прокси
-    else if (error.response?.status === 404) { message = 'Ресурс плеера не найден.'; }
-    else if (error.response?.status === 500) { message = 'Внутренняя ошибка сервера при запросе к Kodik.'; }
-    else if (error.response?.status >= 502 && error.response?.status <= 504) { message = `Ошибка шлюза (${error.response.status}) при доступе к Kodik API.`; }
-
-    return { kodik_link: null, id: null, error: new Error(message) }; // Возвращаем структуру как раньше
+    else if (error.message === 'Network Error') { message = 'Ошибка сети. Проверьте подключение или доступность сервера.'; }
+    // Сообщение от нашего бэкенда
+    else if (error.response?.data?.message && typeof error.response.data.message === 'string') { message = error.response.data.message; }
+    return { kodik_link: null, id: null, error: new Error(message) };
 };
 
 
-/**
- * Ищет плеер Kodik по ID или названию.
- * @param {object} params - Параметры поиска (shikimori_id, kinopoisk_id, imdb_id, title).
- * @returns {Promise<{ kodik_link: string | null, id: string | null, error: Error | null }>}
- */
+// Функция searchKodikPlayer (без изменений в логике)
 export const searchKodikPlayer = async (params = {}) => {
     const hasSearchParam = params.shikimori_id || params.kinopoisk_id || params.imdb_id || params.title;
     if (!hasSearchParam) { return { kodik_link: null, id: null, error: new Error("Для поиска Kodik нужен ID или title") }; }
@@ -59,5 +48,3 @@ export const searchKodikPlayer = async (params = {}) => {
         return handleKodikError(error, 'searchKodikPlayer'); // Используем обработчик
     }
 };
-
-// Функции getGenres/getYears удалены
