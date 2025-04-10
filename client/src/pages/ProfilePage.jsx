@@ -69,7 +69,7 @@ const ProfilePage = () => {
     return (
         <div className={styles.profilePage}>
             <div className={styles.profileCover}>
-                <img src={profileData.cover || '/default-cover.jpg'} alt="Обложка профиля" className={styles.coverImage} onError={(e) => { e.target.onerror = null; e.target.src='/default-cover.jpg'; }} />
+                <img src={profileData.cover || '/logo192.png'} alt="Обложка профиля" className={styles.coverImage} onError={(e) => { e.target.onerror = null; e.target.src='/logo192.png'; }} />
                 <div className={styles.coverOverlay}></div>
             </div>
 
