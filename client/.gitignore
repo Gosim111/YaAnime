@@ -65,3 +65,6 @@ coverage/
 *.gz
 node_modules
 available_shiki_ids.json
+
+package-lock.json
+package.json
