@@ -27,9 +27,9 @@ const handleShikiError = (error, context = 'Shikimori API') => {
 };
 
 const ITEMS_PER_PAGE_CATALOG = 28;
-const PROHIBITED_GENRE_IDS = [12, 31, 32];
+const PROHIBITED_GENRE_IDS = [12, 31, 32]; // Оставляем для фильтрации в getGenres и getAnimeFullById
 
-// Функция searchAnime (без изменений в логике)
+// Функция для получения списков аниме (используется HomePage и CatalogPage)
 export const searchAnime = async (params = {}) => {
     const requestParams = { limit: params.limit || ITEMS_PER_PAGE_CATALOG, page: params.page || 1, censored: 'false', ...params };
     Object.keys(requestParams).forEach(key => { if (requestParams[key] === null || requestParams[key] === undefined || requestParams[key] === '' || (Array.isArray(requestParams[key]) && requestParams[key].length === 0)) { delete requestParams[key]; } else if (Array.isArray(requestParams[key])) { if (requestParams[key].length > 0) { requestParams[key] = requestParams[key].join(','); } else { delete requestParams[key]; } } });
@@ -41,18 +41,19 @@ export const searchAnime = async (params = {}) => {
     } catch (error) { return handleShikiError(error, 'searchAnime'); }
 };
 
-// Функция getAnimeFullById (без изменений)
+// Функция для страницы деталей
 export const getAnimeFullById = async (id) => {
     if (!id) return { data: null, error: new Error("Shikimori ID не указан") };
     try {
         const response = await apiClient.get(`/animes/${id}`);
         const animeData = response.data;
-        if (animeData && Array.isArray(animeData.genres)) { const hasProhibited = animeData.genres.some(g => PROHIBITED_GENRE_IDS.includes(Number(g.id))); if (hasProhibited) { return { data: null, error: new Error("Контент недоступен") }; } }
+        // Фильтруем запрещенные на клиенте, если нужно скрыть контент на странице
+        if (animeData && Array.isArray(animeData.genres)) { const hasProhibited = animeData.genres.some(g => PROHIBITED_GENRE_IDS.includes(Number(g.id))); if (hasProhibited) { console.warn(`[ShikiAPI Client] Попытка доступа к контенту с запрещенным жанром (ID: ${id})`); return { data: null, error: new Error("Контент недоступен") }; } }
         return { data: animeData || null, error: null };
     } catch (error) { return handleShikiError(error, `getAnimeFullById(${id})`); }
 };
 
-// Функция getGenres (без изменений)
+// Функция для получения жанров (с фильтрацией)
 export const getGenres = async () => {
     try {
         const response = await apiClient.get('/genres');
@@ -61,7 +62,7 @@ export const getGenres = async () => {
     } catch (error) { return handleShikiError(error, 'getGenres'); }
 };
 
-// Функция getStudios (без изменений)
+// Функция для получения студий
 export const getStudios = async () => {
     try {
         const response = await apiClient.get('/studios');
